@@ -57,6 +57,8 @@
     <Antlr4 Include="QbScript.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>GH3MR.Scripting</CustomToolNamespace>
+      <Listener>False</Listener>
+      <Visitor>True</Visitor>
     </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

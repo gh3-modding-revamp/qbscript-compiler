@@ -35,4 +35,4 @@ WhiteSpace : [ \t\r\n] -> skip;
 Reserved : I F | E L S E | C A S E;
 Identifier : Alpha IdChar+;
 
-scriptHeader : 'script' Identifier LPAREN RPAREN; // TODO: support script arguments
+scriptHeader : 'script' Identifier '(' ')'; // TODO: support script arguments
