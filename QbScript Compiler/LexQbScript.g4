@@ -30,14 +30,33 @@ fragment Z : [zZ];
 fragment Alpha : [a-zA-Z];
 fragment Digit : [0-9];
 fragment IdChar : Alpha | Digit | '_';
+fragment HexChar : [a-fA-F] | Digit;
 
 LineComment : '//' ~[\r\n]* '\r'? '\n' -> skip; // LineComment must come before WhiteSpace for the \r\n bit to work
 BlockComment : '/*' .*? '*/' -> skip;
 WhiteSpace : [ \t\r\n] -> skip;
-Reserved : I F | E L S E | C A S E;
+If : I F;
+Else : E L S E;
+Case : C A S E;
+Struct : S T R U C T '{' -> pushMode(STRUCT);
+Map : M A P;
+Script : S C R I P T;
 Identifier : Alpha IdChar+;
 HexNum : '0x' Digit+;
 Decimal : '-'? Digit+ '.' Digit+ (E Digit+)?;
+Int : '-'? Digit+;
+Passthrough : '<...>';
+
+Colon : ':';
+Comma : ',';
+Dollar : '$';
+Equals : '=';
+LBrace : '{';
+LBrack : '[';
+LParen : '(';
+RBrace : '}';
+RBrack : ']';
+RParen : ')';
 
 String : '\'' -> more, pushMode(STR);
 WString : '"' -> more, pushMode(WSTR);
@@ -51,7 +70,7 @@ StringText : . -> more;
 mode WSTR;
 
 WStringEnd : '"' -> popMode;
-WStringEsc : '\\' -> pushMode(STRESC);
+WStringEsc : '\\' -> pushMode(WSTRESC);
 WStringText : . -> more;
 
 mode STRESC;
@@ -59,5 +78,20 @@ mode STRESC;
 Esc : FakeEsc | SingleEsc | OctEsc | HexEsc;
 FakeEsc : '&' -> popMode; // To separate e.g. an octal escape from an adjacent digit
 SingleEsc : [\\'"a-wyzA-WYZ] -> popMode;
-OctEsc : [0-9]+ -> popMode;
-HexEsc : 'x' [0-9a-fA-F]+ -> popMode;
+OctEsc : Digit Digit? Digit? -> popMode;
+HexEsc : 'x' HexChar HexChar -> popMode;
+
+mode WSTRESC;
+
+WEsc : WFakeEsc | WSingleEsc | WOctEsc | WHexEsc;
+WFakeEsc : '&' -> popMode; // To separate e.g. an octal escape from an adjacent digit
+WSingleEsc : [\\'"a-wyzA-WYZ] -> popMode;
+WOctEsc : Digit+ -> popMode;
+WHexEsc : 'x' (HexChar HexChar)+ -> popMode;
+
+mode STRUCT;
+
+StructType : I N T | F L O A T | S T R I N G | W S T R I N G | V E C T O R '2' | V E C T O R '3' | Struct
+           | A R R A Y '<' StructType '>' | Q B K E Y | Q B K E Y R E F | S T R I N G P T R | S T R I N G Q S;
+
+EndStruct : '}' -> popMode;

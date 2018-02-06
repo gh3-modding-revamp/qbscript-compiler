@@ -60,7 +60,10 @@
       <Listener>False</Listener>
       <Visitor>True</Visitor>
     </Antlr4>
-    <None Include="QbScript.g4" />
+    <Antlr4 Include="QbScript.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>GH3MR.Scripting</CustomToolNamespace>
+    </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
